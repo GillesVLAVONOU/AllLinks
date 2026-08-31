@@ -1,0 +1,9 @@
+{
+  "name": "alllinks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AllLinks - Téléchargeur de vidéos et images",
+  "dependencies": {
+    "ab-downloader": "^2.0.0"
+  }
+}

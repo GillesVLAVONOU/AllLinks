@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AllLinks - Téléchargeur de vidéos et images</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AllLinks</h1>
+      <p class="tagline">Téléchargez des vidéos et images depuis n'importe quelle plateforme</p>
+    </header>
+
+    <main>
+      <div class="input-group">
+        <div class="input-wrapper">
+          <input type="text" id="urlInput" placeholder="Collez un lien YouTube, TikTok, Instagram, Twitter, Facebook..." autocomplete="off">
+          <button id="clearBtn" class="clear-btn" title="Effacer">&times;</button>
+        </div>
+        <button id="downloadBtn" class="btn-primary">Télécharger</button>
+      </div>
+
+      <div class="platforms">
+        <span class="platform-badge" data-platform="youtube">YouTube</span>
+        <span class="platform-badge" data-platform="tiktok">TikTok</span>
+        <span class="platform-badge" data-platform="instagram">Instagram</span>
+        <span class="platform-badge" data-platform="twitter">Twitter/X</span>
+        <span class="platform-badge" data-platform="facebook">Facebook</span>
+        <span class="platform-badge" data-platform="direct">Lien direct</span>
+      </div>
+
+      <div id="status" class="status hidden"></div>
+
+      <div id="result" class="result hidden">
+        <div class="preview">
+          <img id="thumbnail" src="" alt="Aperçu">
+          <div class="preview-info">
+            <h3 id="title"></h3>
+            <p id="author"></p>
+          </div>
+        </div>
+
+        <div id="qualitySection" class="quality-section hidden">
+          <label>Choisir la qualité :</label>
+          <div id="qualityOptions" class="quality-options"></div>
+        </div>
+
+        <a id="downloadLink" href="#" class="btn-download" target="_blank" rel="noopener">
+          Télécharger
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <p>AllLinks utilise <a href="https://cobalt.tools" target="_blank" rel="noopener">Cobalt</a> pour l'extraction. Hébergé sur Netlify.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

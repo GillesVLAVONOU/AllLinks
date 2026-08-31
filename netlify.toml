@@ -1,0 +1,12 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["node_modules/ab-downloader/**"]
+
+[[redirects]]
+  from = "/download"
+  to = "/.netlify/functions/download"
+  status = 200
