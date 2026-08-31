@@ -74,16 +74,23 @@ async function handleDownload() {
   downloadBtn.disabled = true;
 
   try {
-    const response = await fetch('/.netlify/functions/download', {
+    const response = await fetch('/download', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url }),
     });
 
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : null;
 
     if (!response.ok) {
-      throw new Error(data.error || 'Erreur lors de l\'extraction.');
+      throw new Error(data?.error || 'Le serveur n\'a pas renvoyé de réponse JSON valide.');
+    }
+
+    if (!data) {
+      throw new Error('Le serveur n\'a pas renvoyé de réponse JSON valide.');
     }
 
     showStatus('Lien extrait avec succès !', 'success');
