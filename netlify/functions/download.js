@@ -1,6 +1,3 @@
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
 const { ttdl, igdl, fbdown, twitter, youtube } = require('ab-downloader');
 
 const handlers = {
@@ -69,7 +66,7 @@ const handlers = {
       title: data.title || 'Twitter/X Media',
       thumbnail: data.thumb || null,
       author: null,
-      qualities: urls.length > 1 ? urls.map((u, i) => ({
+      qualities: urls.length > 1 ? urls.map((u) => ({
         url: u.hd || u.sd,
         label: u.hd ? 'HD' : 'SD',
         type: 'video',
@@ -87,55 +84,57 @@ function detectPlatform(url) {
   return null;
 }
 
-export default async (request) => {
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
+exports.handler = async (event) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    const { url } = await request.json();
+    const { url } = JSON.parse(event.body || '{}');
 
     if (!url) {
-      return new Response(JSON.stringify({ error: 'URL requise.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'URL requise.' }) };
     }
 
     const platform = detectPlatform(url);
     if (!platform) {
-      return new Response(JSON.stringify({ error: 'Plateforme non supportée. Utilisez un lien YouTube, TikTok, Instagram, Twitter/X ou Facebook.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Plateforme non supportée. Utilisez un lien YouTube, TikTok, Instagram, Twitter/X ou Facebook.' }),
+      };
     }
 
     const handler = handlers[platform];
     const result = await handler(url);
 
     if (!result.url) {
-      return new Response(JSON.stringify({ error: 'Impossible d\'extraire le lien de téléchargement. Le contenu est peut-être privé ou indisponible.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Impossible d\'extraire le lien de téléchargement. Le contenu est peut-être privé ou indisponible.' }),
+      };
     }
 
-    return new Response(JSON.stringify(result), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return { statusCode: 200, headers, body: JSON.stringify(result) };
 
   } catch (err) {
     console.error('Download error:', err);
-    return new Response(JSON.stringify({ error: 'Erreur lors de l\'extraction: ' + (err.message || 'erreur inconnue') }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: 'Erreur lors de l\'extraction: ' + (err.message || 'erreur inconnue') }),
+    };
   }
-};
-
-export const config = {
-  path: '/download',
 };
